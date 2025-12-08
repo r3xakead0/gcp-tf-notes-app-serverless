@@ -35,6 +35,19 @@ module "firebase" {
   depends_on = [google_project_service.services]
 }
 
+module "storage" {
+  source = "./modules/storage"
+
+  project_id     = var.project_id
+  location       = var.region
+  bucket_name    = local.frontend_bucket
+  frontend_dir   = var.frontend_dir
+  index_document = var.frontend_index_document
+  error_document = var.frontend_error_document
+
+  depends_on = [google_project_service.services]
+}
+
 module "cloud_function" {
   source = "./modules/cloud-function"
 
@@ -52,17 +65,4 @@ module "cloud_function" {
   environment_variables = var.function_environment_variables
 
   depends_on = [google_project_service.services, module.firebase]
-}
-
-module "storage" {
-  source = "./modules/storage"
-
-  project_id     = var.project_id
-  location       = var.region
-  bucket_name    = local.frontend_bucket
-  frontend_dir   = var.frontend_dir
-  index_document = var.frontend_index_document
-  error_document = var.frontend_error_document
-
-  depends_on = [google_project_service.services]
 }

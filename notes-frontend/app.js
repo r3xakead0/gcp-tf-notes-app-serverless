@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------------
  * Author: Afu Tse
- * GitHub Repo: https://github.com/r3xakead0/gcp-notes-app-serverless
+ * GitHub Repo: https://github.com/r3xakead0/gcp-tf-notes-app-serverless
  * Description: JavaScript for a frontend notes application
  * -------------------------------------------------------------------*/
 
