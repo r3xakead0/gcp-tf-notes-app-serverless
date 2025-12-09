@@ -32,7 +32,7 @@ echo "Creating Workload Identity Pool..."
 gcloud iam workload-identity-pools create github-pool \
   --project=$PROJECT_ID \
   --location="global" \
-  --display-name="GitHub Actions Pool"
+  --display-name="GitHub Actions Pool" 
 
 # 4. Create OIDC Provider
 echo "Creating OIDC Provider..."

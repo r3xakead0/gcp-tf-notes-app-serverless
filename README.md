@@ -6,6 +6,18 @@ Serverless notes application on Google Cloud:
 - Firestore (native mode) for persistence
 - Terraform to provision APIs, storage, Firestore, IAM, and the function
 
+## Architecture
+```mermaid
+flowchart LR
+  user(["User"]) -->|HTTPS| frontend["Static Site (Cloud Storage)"]
+  frontend -->|Fetch notes| function["Cloud Function (Python 3.11)"]
+  function -->|CRUD| firestore["Firestore"]
+  terraform["Terraform IaC"] --> frontend
+  terraform --> function
+  terraform --> firestore
+  terraform --> apis["APIs + IAM + Service Account"]
+```
+
 ## Repository layout
 - `notes-frontend/` static site uploaded to GCS (update `API_BASE_URL` in `app.js` to point at your function).
 - `notes-backend/` Cloud Function code (`notes_api` entry point) and `requirements.txt`.
