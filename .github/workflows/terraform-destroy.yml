@@ -18,12 +18,12 @@ jobs:
 
       - name: Set Terraform variables
         run: |
-          echo "TF_VAR_project_id=${{ vars.GCP_CREDENTIALS }}" >> $GITHUB_ENV
+          echo "TF_VAR_project_id=${{ vars.GCP_PROJECT_ID }}" >> $GITHUB_ENV
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
@@ -31,7 +31,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.8.5"
+          terraform_version: "1.14.1"
 
       - name: Terraform Init
         run: terraform init
