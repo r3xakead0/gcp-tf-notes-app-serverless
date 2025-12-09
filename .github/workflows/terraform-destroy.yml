@@ -20,13 +20,12 @@ jobs:
         run: |
           echo "TF_VAR_project_id=${{ vars.GCP_PROJECT_ID }}" >> $GITHUB_ENV
 
-      - name: Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud (OIDC)
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v2
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SA_EMAIL }}
+          project_id: ${{ vars.GCP_PROJECT_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -37,4 +36,6 @@ jobs:
         run: terraform init
 
       - name: Terraform Destroy
+        env:
+          TF_IN_AUTOMATION: true
         run: terraform destroy -auto-approve
