@@ -1,34 +1,56 @@
 # GCP Serverless Notes App (Terraform)
 
-Simple notes application deployed on Google Cloud with a static frontend, a Cloud Functions (2nd gen) backend, and Firestore for storage. Terraform provisions everything: required APIs, storage bucket hosting the site, Firestore database, and the Cloud Function plus its service account.
+Serverless notes application on Google Cloud:
+- Static frontend served from a public Cloud Storage bucket
+- Python 3.11 Cloud Functions (2nd gen) API
+- Firestore (native mode) for persistence
+- Terraform to provision APIs, storage, Firestore, IAM, and the function
 
 ## Repository layout
-- `notes-frontend/` static site uploaded to a public Cloud Storage bucket.
-- `notes-backend/` Python 3.11 Cloud Function handling CRUD for notes in Firestore.
-- `terraform/` root Terraform configuration and modules for storage, Firestore, and the function.
+- `notes-frontend/` static site uploaded to GCS (update `API_BASE_URL` in `app.js` to point at your function).
+- `notes-backend/` Cloud Function code (`notes_api` entry point) and `requirements.txt`.
+- `terraform/` root config plus modules for storage, Firestore, and the function.
+- `.github/workflows/` CI (plan) and CD (apply) Terraform pipelines.
 
 ## Prerequisites
-- A GCP project with billing enabled and Firestore allowed in your chosen region.
-- `gcloud` authenticated (`gcloud auth application-default login`) and pointing at the project.
-- Terraform 1.5+ installed.
-- Python 3.11 only if you want to modify or test the function locally.
+- GCP project with billing enabled; Firestore available in your selected `region`.
+- Terraform 1.5+.
+- `gcloud auth application-default login` against the target project for local runs.
+- Optional: Python 3.11 if you want to tweak/test the function locally.
 
-## Quick deploy
-1. Update `terraform/terraform.tfvars` with your `project_id` and `region` (defaults to `us-central1`). Optional overrides are in `terraform/variables.tf`.
-2. From `terraform/` run:
-   ```bash
-   terraform init
-   terraform plan -out=tfplan
-   terraform apply tfplan
-   ```
-3. After apply, note the outputs for `function_url` and `frontend_site_url`. If the function URL differs from the default in `notes-frontend/app.js` (`API_BASE_URL`), update it and re-run `terraform apply` to sync the assets.
+## Configure
+Edit `terraform/terraform.tfvars`:
+```hcl
+project_id = "your-project-id"
+region     = "us-central1"
+```
+Other tunables (bucket name override, function memory/timeout, env vars, etc.) live in `terraform/variables.tf`.
+
+If you change the function URL, update `notes-frontend/app.js` (`API_BASE_URL`) so the static site calls the correct endpoint.
+
+## Deploy with Terraform
+From `terraform/`:
+```bash
+terraform init
+terraform plan -out=tfplan
+terraform apply tfplan
+```
+Outputs include:
+- `frontend_site_url` public URL for the static site
+- `function_url` Cloud Functions HTTPS endpoint
+
+## GitHub Actions (optional)
+- `.github/workflows/terraform.yml`: plan on PRs/pushes to main/master.
+- `.github/workflows/terraform-apply.yml`: apply on push to main/master or manual dispatch.
+
+Set a `GCP_CREDENTIALS` secret containing a JSON service account key with permissions to run Terraform (enough to enable APIs, create buckets, functions, and Firestore). You can swap to Workload Identity Federation if preferred.
 
 ## API
-- `GET /notes` list notes (sorted newest first)
-- `POST /notes` create (`{ "title": "...", "detail": "..." }`)
-- `GET /notes/{id}` fetch a note
-- `PUT /notes/{id}` update title/detail
-- `DELETE /notes/{id}` remove a note
+- `GET  /notes` list (newest first)
+- `POST /notes` create with `{ "title": "...", "detail": "..." }`
+- `GET  /notes/{id}` fetch one
+- `PUT  /notes/{id}` update title/detail
+- `DELETE /notes/{id}` delete
 
-## Cleaning up
-Run `terraform destroy` from `terraform/` to remove all created resources (storage bucket, function, Firestore database, service account, and enabled APIs).
+## Cleanup
+From `terraform/` run `terraform destroy` to remove the bucket, function, Firestore database, service account, and enabled APIs.

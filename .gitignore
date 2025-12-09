@@ -213,5 +213,3 @@ terraform.rc
 *.zip
 
 # End of https://www.toptal.com/developers/gitignore/api/python,terraform
-
-terraform/GCP_SA.json
