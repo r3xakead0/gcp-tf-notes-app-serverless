@@ -30,7 +30,7 @@ variable "frontend_index_document" {
 variable "frontend_error_document" {
   description = "Error document for the static site."
   type        = string
-  default     = "index.html"
+  default     = "error.html"
 }
 
 variable "backend_dir" {

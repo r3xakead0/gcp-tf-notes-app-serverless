@@ -26,15 +26,6 @@ resource "google_project_service" "services" {
   disable_on_destroy         = false
 }
 
-module "firebase" {
-  source = "./modules/firebase"
-
-  project_id = var.project_id
-  location   = var.region
-
-  depends_on = [google_project_service.services]
-}
-
 module "storage" {
   source = "./modules/storage"
 
@@ -44,6 +35,15 @@ module "storage" {
   frontend_dir   = var.frontend_dir
   index_document = var.frontend_index_document
   error_document = var.frontend_error_document
+
+  depends_on = [google_project_service.services]
+}
+
+module "firebase" {
+  source = "./modules/firebase"
+
+  project_id = var.project_id
+  location   = var.region
 
   depends_on = [google_project_service.services]
 }
