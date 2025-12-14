@@ -8,6 +8,10 @@ on:
         required: true
         default: "NO"
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   destroy:
     if: github.event.inputs.confirm == 'DESTROY'
