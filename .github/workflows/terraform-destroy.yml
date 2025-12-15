@@ -16,6 +16,9 @@ jobs:
   destroy:
     if: github.event.inputs.confirm == 'DESTROY'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
 
     steps:
       - uses: actions/checkout@v4
@@ -38,6 +41,9 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
 
       - name: Terraform Destroy
         env:
